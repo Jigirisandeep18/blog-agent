@@ -1,8 +1,37 @@
+# Sensitive files - NEVER upload these
 .env
 credentials.json
 token.json
+
+# Generated content (optional - you can include or exclude these)
 generated_blogs/
-__pycache__/
-.venv/
-*.pyc
 test_blog.txt
+blog_generation_summary.*
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log
