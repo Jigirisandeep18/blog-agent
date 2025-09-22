@@ -2,26 +2,34 @@ name: Daily Blog Pipeline
 
 on:
   schedule:
-    - cron: "0 3 * * *"   # runs daily at 03:00 UTC
-  workflow_dispatch:      # allows manual trigger
+    - cron: "0 3 * * *"   # Runs daily at 03:00 UTC (adjust as needed)
+  workflow_dispatch:      # Allows manual trigger
 
 jobs:
-  run-pipeline:
+  run-blog-pipeline:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.9
         uses: actions/setup-python@v4
         with:
           python-version: "3.9"
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-      - name: Run pipeline
+
+      - name: Install Dependencies
+        run: pip install --no-cache-dir -r requirements.txt
+
+      - name: Run Blog Generator
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+          AIRTABLE_TABLE_NAME: ${{ secrets.AIRTABLE_TABLE_NAME }}
+          EXCEL_FILE_PATH: data/Key\ Insights.xlsx  # If your Excel is in repo
         run: python main.py
-      - name: Upload generated blogs
+
+      - name: Upload Generated Blogs
         uses: actions/upload-artifact@v3
         with:
           name: blogs
