@@ -1,0 +1,44 @@
+# Ignore these files and directories when building Docker image
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Generated blogs (will be created fresh in container)
+generated_blogs/
+
+# Test files
+test_*.py
+test_*.txt
+
+# Git files
+.git/
+.gitignore
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+
+# Documentation
+README.md
+*.md

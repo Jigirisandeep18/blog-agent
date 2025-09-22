@@ -1,0 +1,46 @@
+BLOG GENERATION - TOKEN USAGE AND COST REPORT
+============================================================
+
+Report Generated: 2025-09-21 11:15:38
+Project: Blog Generation Agent
+Developer: Sandeep
+
+SUMMARY:
+------------------------------
+Model Used: gpt-4o
+Total Blogs: 3
+Total Input Tokens: 1,862
+Total Output Tokens: 3,103
+Total Tokens: 4,965
+Total Cost: $0.0559
+Average Cost per Blog: $0.0186
+Cost per 1,000 tokens: $0.0113
+
+PRICING BREAKDOWN:
+------------------------------
+Input Token Cost ($0.005/1K): $0.0093
+Output Token Cost ($0.015/1K): $0.0465
+
+INDIVIDUAL BLOG DETAILS:
+------------------------------
+
+Blog 1: AI Influencers
+  Input Tokens: 609
+  Output Tokens: 1,022
+  Total Tokens: 1,631
+  Word Count: 758
+  Cost: $0.0184
+
+Blog 2: AI in Fraud (“Double-Edged Sword”)
+  Input Tokens: 634
+  Output Tokens: 1,049
+  Total Tokens: 1,683
+  Word Count: 792
+  Cost: $0.0189
+
+Blog 3: Anthropic Blocks AI Misuse
+  Input Tokens: 619
+  Output Tokens: 1,032
+  Total Tokens: 1,651
+  Word Count: 798
+  Cost: $0.0186
