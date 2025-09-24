@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Generator - Production Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 600px;
+        }
+
+        .input-panel {
+            padding: 30px;
+            background: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .output-panel {
+            padding: 30px;
+            background: white;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #cce7ff;
+            color: #004085;
+            border: 1px solid #b8daff;
+        }
+
+        .blog-result {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .blog-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+        }
+
+        .meta-item {
+            text-align: center;
+        }
+
+        .meta-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+
+        .meta-label {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .blog-content {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-right: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .system-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .status-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            text-align: center;
+        }
+
+        .status-card.connected {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+
+        .status-card.disconnected {
+            border-color: #dc3545;
+            background: #fff8f8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AI Blog Generator</h1>
+            <p>Professional Blog Generation with OpenAI GPT-4 & Airtable Integration</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-panel">
+                <h2>Blog Generation</h2>
+
+                <div class="system-status" id="systemStatus">
+                    <div class="status-card" id="openaiStatus">
+                        <strong>OpenAI</strong><br>
+                        <span>Checking...</span>
+                    </div>
+                    <div class="status-card" id="airtableStatus">
+                        <strong>Airtable</strong><br>
+                        <span>Checking...</span>
+                    </div>
+                    <div class="status-card" id="topicsStatus">
+                        <strong>Topics</strong><br>
+                        <span>Loading...</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="topicSelect">Select Topic:</label>
+                    <select id="topicSelect">
+                        <option value="">Loading topics...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="customTopic">Or Enter Custom Topic:</label>
+                    <textarea id="customTopic" placeholder="Enter your custom blog topic here..."></textarea>
+                </div>
+
+                <button class="btn" id="generateBtn" onclick="generateBlog()">
+                    Generate Blog
+                </button>
+
+                <div id="status"></div>
+            </div>
+
+            <div class="output-panel">
+                <h2>Generated Blog</h2>
+                <div id="output">
+                    <p style="text-align: center; color: #6c757d; margin-top: 50px;">
+                        Generate a blog to see results here
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+
+        // Initialize the application
+        async function init() {
+            await checkSystemStatus();
+            await loadTopics();
+        }
+
+        // Check system status
+        async function checkSystemStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/stats`);
+                const stats = await response.json();
+
+                // Update status cards
+                updateStatusCard('openaiStatus', stats.openai_connected, 'OpenAI Connected');
+                updateStatusCard('airtableStatus', stats.airtable_connected, 'Airtable Connected');
+                updateStatusCard('topicsStatus', stats.available_topics > 0, `${stats.available_topics} Topics`);
+
+            } catch (error) {
+                console.error('Failed to check system status:', error);
+                updateStatusCard('openaiStatus', false, 'Connection Failed');
+                updateStatusCard('airtableStatus', false, 'Connection Failed');
+                updateStatusCard('topicsStatus', false, 'Load Failed');
+            }
+        }
+
+        function updateStatusCard(id, connected, text) {
+            const card = document.getElementById(id);
+            card.className = `status-card ${connected ? 'connected' : 'disconnected'}`;
+            card.querySelector('span').textContent = text;
+        }
+
+        // Load available topics
+        async function loadTopics() {
+            try {
+                const response = await fetch(`${API_BASE}/topics`);
+                const data = await response.json();
+
+                const select = document.getElementById('topicSelect');
+                select.innerHTML = '<option value="">Select a topic...</option>';
+
+                data.topics.forEach(topic => {
+                    const option = document.createElement('option');
+                    option.value = topic.id;
+                    option.textContent = topic.topic;
+                    select.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error('Failed to load topics:', error);
+                showStatus('Failed to load topics from API', 'error');
+            }
+        }
+
+        // Generate blog
+        async function generateBlog() {
+            const topicId = document.getElementById('topicSelect').value;
+            const customTopic = document.getElementById('customTopic').value.trim();
+
+            if (!topicId && !customTopic) {
+                showStatus('Please select a topic or enter a custom topic', 'error');
+                return;
+            }
+
+            const generateBtn = document.getElementById('generateBtn');
+            const output = document.getElementById('output');
+
+            // Show loading
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Generating...';
+            output.innerHTML = '<div class="loading"><div class="spinner"></div>Generating your blog...</div>';
+            showStatus('Generating blog with OpenAI GPT-4...', 'info');
+
+            try {
+                const requestBody = {};
+                if (customTopic) {
+                    requestBody.custom_topic = customTopic;
+                } else {
+                    requestBody.topic_id = parseInt(topicId);
+                }
+
+                const response = await fetch(`${API_BASE}/generate-blog`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    displayBlog(result.blog);
+                    showStatus(`Blog generated successfully! Cost: $${result.blog.cost.toFixed(4)}`, 'success');
+                } else {
+                    showStatus(`Generation failed: ${result.error}`, 'error');
+                    output.innerHTML = '<p style="color: red;">Generation failed. Please try again.</p>';
+                }
+
+            } catch (error) {
+                console.error('Generation error:', error);
+                showStatus('Failed to generate blog. Check if API server is running.', 'error');
+                output.innerHTML = '<p style="color: red;">Connection error. Make sure the API server is running on localhost:5000</p>';
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'Generate Blog';
+            }
+        }
+
+        // Display generated blog
+        function displayBlog(blog) {
+            const output = document.getElementById('output');
+
+            const metaHtml = `
+                <div class="blog-meta">
+                    <div class="meta-item">
+                        <span class="meta-value">${blog.word_count}</span>
+                        <div class="meta-label">Words</div>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-value">${blog.total_tokens.toLocaleString()}</span>
+                        <div class="meta-label">Tokens</div>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-value">$${blog.cost.toFixed(4)}</span>
+                        <div class="meta-label">Cost</div>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-value">${blog.model_used}</span>
+                        <div class="meta-label">Model</div>
+                    </div>
+                </div>
+            `;
+
+            const contentHtml = `
+                <div class="blog-result">
+                    ${metaHtml}
+                    <div class="blog-content">${blog.content}</div>
+                </div>
+            `;
+
+            output.innerHTML = contentHtml;
+        }
+
+        // Show status message
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.className = `status ${type}`;
+            status.textContent = message;
+
+            if (type === 'success') {
+                setTimeout(() => {
+                    status.textContent = '';
+                    status.className = '';
+                }, 5000);
+            }
+        }
+
+        // Initialize when page loads
+        window.onload = init;
+    </script>
+</body>
+</html>

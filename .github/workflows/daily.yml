@@ -1,36 +1,49 @@
-name: Daily Blog Pipeline
+name: Generate Blogs
 
 on:
-  schedule:
-    - cron: "0 3 * * *"   # Runs daily at 03:00 UTC (adjust as needed)
-  workflow_dispatch:      # Allows manual trigger
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    schedule:
+      - cron: "30 3 * * *"   # Runs daily at 03:30 UTC (09:00 IST)
 
 jobs:
-  run-blog-pipeline:
+  build-and-run:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
 
-      - name: Set up Python 3.9
+    env:
+      # Map GitHub Secrets to environment variables
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      GOOGLE_CREDENTIALS_FILE: ${{ secrets.GOOGLE_CREDENTIALS_FILE }}
+      EXCEL_FILE_PATH: data/Key Insights.xlsx
+      GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+      LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+      BLOG_GENERATION_FREQUENCY: ${{ secrets.BLOG_GENERATION_FREQUENCY }}
+      AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+      AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+      AIRTABLE_TABLE_NAME: ${{ secrets.AIRTABLE_TABLE_NAME }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: 3.11
 
-      - name: Install Dependencies
-        run: pip install --no-cache-dir -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Run Blog Generator
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
-          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
-          AIRTABLE_TABLE_NAME: ${{ secrets.AIRTABLE_TABLE_NAME }}
-          EXCEL_FILE_PATH: data/Key\ Insights.xlsx  # If your Excel is in repo
-        run: python main.py
+      - name: Run Blog Generation Pipeline
+        run: |
+          python main.py
 
-      - name: Upload Generated Blogs
-        uses: actions/upload-artifact@v3
+      - name: Upload Generated Blogs as Artifacts
+        uses: actions/upload-artifact@v4
         with:
-          name: blogs
+          name: generated-blogs
           path: generated_blogs/
